@@ -39,6 +39,17 @@ export default function CardDetail() {
     localStorage.setItem("cart", JSON.stringify(updatedCards));
   };
 
+  const removeFromCart = (id: string) => {
+    const confirmation = window.confirm(
+      "Are you sure you want to remove this item from your cart?"
+    );
+    if (confirmation) {
+      const updatedCards = cards.filter((card: any) => card.id !== id);
+      setCards(updatedCards);
+      localStorage.setItem("cart", JSON.stringify(updatedCards));
+    }
+  };
+
   return (
     <div>
       <div className="panel-body">
@@ -53,7 +64,7 @@ export default function CardDetail() {
             </tr>
           </thead>
           <tbody id="my-cart-body">
-            {cards.map((card) => (
+            {cards.map((card: any) => (
               <tr key={card.stt}>
                 <th scope="row">{card.stt}</th>
                 <td>{card.name}</td>
@@ -78,6 +89,7 @@ export default function CardDetail() {
                   <a
                     className="label label-danger delete-cart-item"
                     data-product={card.name}
+                    onClick={() => removeFromCart(card.id)}
                   >
                     Delete
                   </a>
