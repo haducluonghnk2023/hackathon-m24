@@ -64,6 +64,19 @@ export default function Products() {
     } else {
       setProducts(initialProducts);
     }
+
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === "products") {
+        const updatedProducts = JSON.parse(event.newValue || "[]");
+        setProducts(updatedProducts);
+      }
+    };
+
+    window.addEventListener("add", addToCart);
+
+    return () => {
+      window.removeEventListener("add", addToCart);
+    };
   }, []);
 
   useEffect(() => {
@@ -72,37 +85,40 @@ export default function Products() {
 
   const addToCart = (event: any) => {
     const productId = Number(event.target.dataset.product);
-    const updatedProducts = products.map((product: any) => {
-      if (product.id === productId && product.quantity > 0) {
-        const updatedProduct = { ...product, quantity: product.quantity - 1 };
-        return updatedProduct;
+    const productToAdd = products.find((product) => product.id === productId);
+
+    if (productToAdd && productToAdd.quantity > 0) {
+      const updatedProducts = products.map((product) => {
+        if (product.id === productId) {
+          return { ...product, quantity: product.quantity - 1 };
+        }
+        return product;
+      });
+
+      setProducts(updatedProducts);
+      localStorage.setItem("products", JSON.stringify(updatedProducts));
+
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      const productIndex = cart.findIndex(
+        (item: Products) => item.id === productId
+      );
+
+      if (productIndex !== -1) {
+        cart[productIndex].quantity += 1;
+      } else {
+        cart.push({ ...productToAdd, quantity: 1 });
       }
-      return product;
-    });
 
-    setProducts(updatedProducts);
-    localStorage.setItem("products", JSON.stringify(updatedProducts));
+      localStorage.setItem("cart", JSON.stringify(cart));
 
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      setShowNotification(true);
 
-    const productIndex = cart.findIndex(
-      (item: Products) => item.id === productId
-    );
-    if (productIndex !== -1) {
-      cart[productIndex].quantity += 1;
-    } else {
-      const product = products.find((item: any) => item.id === productId);
-      if (product && product.quantity > 0) {
-        cart.push({ ...product, quantity: 1 });
-      }
+      setTimeout(() => {
+        setShowNotification(false);
+      }, 1000);
     }
-    localStorage.setItem("cart", JSON.stringify(cart));
-    setShowNotification(true);
-
-    setTimeout(() => {
-      setShowNotification(false);
-    }, 1000);
   };
+  window.addEventListener("add", addToCart);
 
   return (
     <div>
