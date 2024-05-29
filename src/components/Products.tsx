@@ -2,7 +2,7 @@ import cake from "../images/Cake.jpg";
 import pizza from "../images/pizza.jpg";
 import bread from "../images/bread.jpg";
 import Hamburger from "../images/Hamburger.jpg";
-import AddToCartNotification from "./AddToCard";
+import AddToCartNotification from "./AddToCartNotification";
 import { useEffect, useState } from "react";
 
 interface Products {
@@ -15,6 +15,7 @@ interface Products {
 }
 
 export default function Products() {
+  // Khởi tạo sản phẩm và state
   const initialProducts: Products[] = [
     {
       id: Math.ceil(Math.random() * 99999999999),
@@ -49,7 +50,6 @@ export default function Products() {
       status: false,
     },
   ];
-  //   localStorage.setItem("products", JSON.stringify(initialProducts));
 
   const [showNotification, setShowNotification] = useState(false);
 
@@ -57,6 +57,8 @@ export default function Products() {
     const storedProducts = localStorage.getItem("products");
     return storedProducts ? JSON.parse(storedProducts) : initialProducts;
   });
+
+  // Lấy và cập nhật dữ liệu
   useEffect(() => {
     const storedProducts = localStorage.getItem("products");
     if (storedProducts) {
@@ -65,17 +67,8 @@ export default function Products() {
       setProducts(initialProducts);
     }
 
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === "products") {
-        const updatedProducts = JSON.parse(event.newValue || "[]");
-        setProducts(updatedProducts);
-      }
-    };
-
-    window.addEventListener("add", addToCart);
-
     return () => {
-      window.removeEventListener("add", addToCart);
+      window.removeEventListener("click", addToCart);
     };
   }, []);
 
@@ -83,6 +76,7 @@ export default function Products() {
     localStorage.setItem("products", JSON.stringify(products));
   }, [products]);
 
+  // Thêm vào giỏ hàng
   const addToCart = (event: any) => {
     const productId = Number(event.target.dataset.product);
     const productToAdd = products.find((product) => product.id === productId);
@@ -118,12 +112,11 @@ export default function Products() {
       }, 1000);
     }
   };
-  window.addEventListener("add", addToCart);
 
   return (
     <div>
       <AddToCartNotification show={showNotification} />
-      {products.map((item: any, index: any) => {
+      {products.map((item: Products, index: number) => {
         return (
           <div key={index}>
             <div className="media product">

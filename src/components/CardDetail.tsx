@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import Product from "./Products";
 
 interface Cards {
   name: string;
@@ -9,20 +8,20 @@ interface Cards {
 }
 
 export default function CardDetail() {
+  // khai báo các state
   const [cards, setCards] = useState<Cards[]>([]);
   const [showUpdateNotification, setShowUpdateNotification] = useState(false);
   const [showDeleteNotification, setShowDeleteNotification] = useState(false);
   const [cartUpdated, setCartUpdated] = useState(false);
 
+  // cập nhật trạng thái
   useEffect(() => {
     if (cartUpdated) {
-      // Đây là nơi bạn có thể thực hiện logic để render lại giỏ hàng khi có thay đổi
-      console.log("Đã cập nhật dữ liệu giỏ hàng!");
-      // Đặt lại giá trị cartUpdated về false sau khi đã xử lý
       setCartUpdated(false);
     }
   }, [cartUpdated]);
 
+  // lấy dữ liệu từ localStorage
   useEffect(() => {
     const storedCards = localStorage.getItem("cart");
     if (storedCards) {
@@ -31,14 +30,17 @@ export default function CardDetail() {
     }
   }, []);
 
+  // tính tổng số lượng
   const totalQuantity = useMemo(() => {
     return cards.reduce((sum, card) => sum + card.quantity, 0);
   }, [cards]);
 
+  // tính tổng giá
   const totalPrice = useMemo(() => {
     return cards.reduce((sum, card) => sum + card.price * card.quantity, 0);
   }, [cards]);
 
+  // thay dổi số lượng và sản phẩm
   const handleQuantityChange = (id: number, newQuantity: number) => {
     const updatedCards = cards.map((card) => {
       if (card.id === id) {
@@ -53,6 +55,8 @@ export default function CardDetail() {
     localStorage.setItem("cart", JSON.stringify(updatedCards));
     setCartUpdated(true);
   };
+
+  // cập nhật lại giỏ hàng
   const handleUpdate = () => {
     setShowUpdateNotification(true);
     localStorage.setItem("cart", JSON.stringify(cards));
@@ -61,6 +65,7 @@ export default function CardDetail() {
     }, 2000); // Đặt thời gian cho thông báo biến mất sau 2 giây
   };
 
+  // xóa sản phẩm khỏi giỏ hàng
   const removeFromCart = (id: number) => {
     const confirmation = window.confirm(
       "bạn muốn xóa sản phầm khỏi giỏ hàng không?"
