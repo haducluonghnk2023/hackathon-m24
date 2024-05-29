@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import CardDetail from "./CardDetail";
 import AddToCartNotificationProps from "./AddToCard";
 interface AddToCartNotificationProps {
