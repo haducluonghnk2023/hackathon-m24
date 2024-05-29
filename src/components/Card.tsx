@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CardDetail from "./CardDetail";
-import AddToCartNotificationProps from "./AddToCard";
+import AddToCartNotificationProps from "./DeleAndUpdate";
 interface AddToCartNotificationProps {
   show: boolean;
 }

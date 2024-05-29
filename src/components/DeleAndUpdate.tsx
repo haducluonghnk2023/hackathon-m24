@@ -1,5 +1,5 @@
 import React from "react";
-import "./Atc.css";
+import "./DeleAndUpdate.css";
 
 interface AddToCartNotificationProps {
   show: boolean;

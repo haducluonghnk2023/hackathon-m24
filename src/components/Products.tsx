@@ -78,9 +78,11 @@ export default function Products() {
 
   // Thêm vào giỏ hàng
   const addToCart = (event: any) => {
+    // lấy id sản phẩm , sau đó tìm sp dựa trên id
     const productId = Number(event.target.dataset.product);
     const productToAdd = products.find((product) => product.id === productId);
 
+    // kiểm tra và cập nhật số lượng
     if (productToAdd && productToAdd.quantity > 0) {
       const updatedProducts = products.map((product) => {
         if (product.id === productId) {
@@ -89,24 +91,26 @@ export default function Products() {
         return product;
       });
 
+      // cập nhật lại ds sp
       setProducts(updatedProducts);
       localStorage.setItem("products", JSON.stringify(updatedProducts));
 
+      // cập nhạt lại giỏ hàng trong local
       const cart = JSON.parse(localStorage.getItem("cart") || "[]");
       const productIndex = cart.findIndex(
         (item: Products) => item.id === productId
       );
 
+      // thêm sp vào giỏ hoặc cập nhật số lượng hàng trong giỏ
       if (productIndex !== -1) {
         cart[productIndex].quantity += 1;
       } else {
         cart.push({ ...productToAdd, quantity: 1 });
       }
-
       localStorage.setItem("cart", JSON.stringify(cart));
 
+      // hiển thị thông báo
       setShowNotification(true);
-
       setTimeout(() => {
         setShowNotification(false);
       }, 1000);
@@ -142,7 +146,14 @@ export default function Products() {
                   value={item.quantity}
                   readOnly
                 />
-                <a data-product={item.id} className="price" onClick={addToCart}>
+                <a
+                  data-product={item.id}
+                  className={`price ${item.quantity === 0 ? "disabled" : ""}`}
+                  onClick={item.quantity > 0 ? addToCart : undefined}
+                  style={{
+                    cursor: item.quantity === 0 ? "not-allowed" : "pointer",
+                  }}
+                >
                   {item.price} USD{" "}
                 </a>
               </div>
